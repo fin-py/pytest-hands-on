@@ -62,6 +62,10 @@ pip install . pytest
 (content:references:environment-poetry)=
 ## Poetryを使って仮想環境にインストール
 
+```{caution}
+[仮想環境にインストール](content:references:environment-venv) の手順を実施している場合は以降の手順は不要です。
+```
+
 `virtualenvs.in-project` の設定を確認します。
 
 ```bash
