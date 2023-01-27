@@ -13,6 +13,10 @@ build:
 
       - "jupyter-book config sphinx docs/"
 
+python:
+   install:
+   - requirements: requirements.txt
+
 sphinx:
   builder: html
   fail_on_warning: false
