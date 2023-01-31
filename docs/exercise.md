@@ -1,88 +1,67 @@
 # 練習課題
 
-（2023/01/30更新：とりあえず思いつく問題をドンドン書いていって、あとで重複とかを削る）
 
-各章に沿って練習問題を作りました。
+## Pytestの練習
 
-[はじめてのpytest](./hello-world.ipynb) を一度実行して、`test_sample.py` を確認した後、練習問題を入ることをおすすめします。
+以下のテストを書いてみましょう(全部書く必要はありません。)
 
-## 注意
+- 2つの数字を足して答えが正しいことを確認する
+- 2つの数字を引いて答えが正しいことを確認する
+- 2つの文字列が等しいことを確認する
+- 2つのリストが等しいことを確認する
+- 正の数字が正の数字であることを確認する
+- 負の数字が負の数字であることを確認する
+- 3で割り切れる数字が3で割り切れることを確認する
+- 3で割り切れない数字が3で割り切れないことを確認する
 
-<font color="red"><strong>connpass の規約を守るために、 `connpass_client` を使う時は、リクエストは５秒以上間隔を開けて行う工夫をしてください。</strong></font>
-
-## 第01章 はじめてのpytest
-1. 1 は (range 10) に入っていることを確認するテスト
-1. x = 10 y = 20 の時、 x < y であることを確認するテスト
-1. 文字列 "finpy" は 文字列 "finpy-connpass" に入っていることを確認するテスト
-1. リスト [4,5,6] は リスト [7,8,9] であることが失敗するテスト
-
-## 第02章 テスト関数を書く
-#### 検索結果が単一の場合のテスト
-1. [APIリファレンス ](https://connpass.com/about/api/) によると、APIのレスポンスは、`['results_start', 'results_returned', 'results_available', 'events']` の4つのキーワードを持つ辞書です。 `event_id = "266898"` の返り値のキーワードが4つであることを確認するテストを書いて下さい。
-1. そのキーワードが `['results_start', 'results_returned', 'results_available', 'events']` であることを確認するテストを書いて下さい。
-1. `'events'`に紐づくデータの型は `配列(複数要素)`です。よって型は `<class 'list'>` です。これを確認するテストを書いて下さい。
-1. `event_id = "266898"` のイベントは1つしか無いので、`'events'` で得られる配列の要素数も1つです。これを確認するテストを書いて下さい。
-1. `'events'`で得られた各配列は辞書型のデータです。これを確認するテストを書いて下さい。
-
-#### 検索結果が複数の場合のテスト
-1. `series_id=5944` のグループはイベントページを10個作成しています。レスポンスの `'results_returned'` が10であることを確認するテストを書いて下さい。
-1. また、`'events'`の返り値の配列数も10であることを確認するテストを書いて下さい。
-1. よって、`'results_returned'`の返り値は`'events'`の返り値の配列数と同値であることを確認するテストを書いて下さい。
+## connpass_clientを使った connpass api テスト
 
 
-## 第03章 pytestのフィクスチャ
-1. `@pytest.fixture` を使って、`266898` を返すフィクスチャを定義してください
-1. 定義したフィクスチャを使用してアサーションを行うテストを書いてください
-1. 以下のオプションをクライアントに渡してデータを取得するセットアップフィクスチャ `my_data` をスコープレベルをモジュールで書いてください
-    ```bash
-     event_id="273501,272790,271250,270289,269404,266898,264872" # コンマ区切りのID文字列を渡すと複数イベントを取得可
-     order=2 # 開催日時順を降順（新しい順）
+### conftest.py に セットアップとティアダウンを記述
+
+```{attention}
+connpass の規約を守るために、 `connpass_client` を使う時は、リクエストは５秒以上間隔を開けて行う工夫をしましょう。たとえばセットアップもしくはティアダウンのタイミングで `time.sleep(5)` 記述するのは良い方法かもしれません。
+```
+
+1. `event_id="266898"` をリクエストするフィクスチャ `an_event_data` を書いてください。
+1. `event_id='273501,272790,271250,270289,269404,266898,264872'` と `order=2` オプションに入れてリクエストするフィクスチャ `some_events_data` を書いてください。
+
+
+### 一つのイベントリクエストに対するテスト
+
+an_event_data フィクスチャを使って以下のテストを書いてみましょう
+
+1. an_event_data のレスポンスフィールドは、`['results_start', 'results_returned', 'results_available', 'events']` である
+1. `events` の配列データは１つである
+1. `events` の配列データで返ってくる一つの辞書データのキーは `['event_id', 'title', 'catch', 'description', 'event_url', 'started_at', 'ended_at', 'limit', 'hash_tag', 'event_type', 'accepted', 'waiting', 'updated_at', 'owner_id', 'owner_nickname', 'owner_display_name', 'place', 'address', 'lat', 'lon', 'series']` と一致する
+1. `results_returned`と `events` の配列データ数は一致する
+1. `event_id="266898"` を３回リクエストし、常に同じレスポンスであること
+
+
+### 複数のイベントリクエストに対するテスト
+
+`some_events_data` フィクスチャを使って以下のテストを書いてみましょう。
+
+1. some_events_data のレスポンスフィールドは、`['results_start', 'results_returned', 'results_available', 'events']` である
+1. `events` の配列データは7つである
+1. `events` の配列データで返ってくるそれぞれの辞書データのキーは `['event_id', 'title', 'catch', 'description', 'event_url', 'started_at', 'ended_at', 'limit', 'hash_tag', 'event_type', 'accepted', 'waiting', 'updated_at', 'owner_id', 'owner_nickname', 'owner_display_name', 'place', 'address', 'lat', 'lon', 'series']` と一致する
+1. イベントIDがリクエストした時のID７つと一致すること
+1. `results_returned`と `events` の配列データ数は一致する
+1. `owner_id` は全て `36417` である
+1. `events` の配列データは、開催日時順が降順(新着順)である
+
+### テストの目的からフィクスチャを書く
+
+以下のテストは、フィクスチャを新規に作る必要が有ります。テストにあわせてフィクスチャを作り、テストを作成してください
+
+1. `event_id="266898"` のレスポンスをいったん CSV に書き出し、一行目が以下の一致すること。
     ```
-1.  `my_data` を使って以下のテストを書いてください
-    1. `'events'`は７つであること
-    1. イベントIDが上記７つのIDのと一致すること
-    1. `owner_id` は全て `36417` であること
-    1. 開催日時順が降順で返ってきていること
-
-
-## 第04章 組み込みフィクスチャ
-
-1. 以下は、PythonでCSVファイルをSQLiteデータベースに変換する例のコードです。(ChatGPT に書いてもらいました。)
-    ```python 
-    import csv
-    import sqlite3
-
-    # CSVファイルのパス
-    csv_file = 'example.csv'
-    # SQLiteデータベースのパス
-    sqlite_file = 'example.db'
-
-    # CSVファイルの読み込み
-    with open(csv_file, 'r') as file:
-        reader = csv.reader(file)
-        header = next(reader)
-        rows = [row for row in reader]
-
-    # SQLiteデータベースへの接続
-    conn = sqlite3.connect(sqlite_file)
-    cursor = conn.cursor()
-
-    # テーブルの作成
-    table_name = 'example_table'
-    cursor.execute(f'DROP TABLE IF EXISTS {table_name}')
-    cursor.execute(f'CREATE TABLE {table_name} ({", ".join(header)})')
-
-    # CSVデータの挿入
-    for row in rows:
-        cursor.execute(f'INSERT INTO {table_name} VALUES ({",".join(["?" for i in range(len(header))])})', row)
-
-    # 変更の保存とデータベースの接続の終了
-    conn.commit()
-    conn.close()
-
+    event_id,title,catch,description,event_url,started_at,ended_at,limit,hash_tag,event_type,accepted,waiting,updated_at,owner_id,owner_nickname,owner_display_name,place,address,lat,lon,series
     ```
-    以下は `connpass_client` を使って取得したデータを csv file へ書き出すコード例です。
-
+    
+    ```{note}
+     以下は `connpass_client` を使って取得したデータを csv file へ書き出すコード例です。
+    ```
     ```python
     from connpass_client import ConnpassClient, Writer
     cli = ConnpassClient()
@@ -90,27 +69,21 @@
     data = cli.get(series_id=series_id)
     Writer(data).to_csv("/tmp/series_id_5944.csv")
     ```
-    この２つのコード例を参考に、client で取得したデータを一時ディレクトリにCSVとして保存した後、SQLITEへ挿入しするセットアップを書いてみましょう。一時ディレクトリは組み込みフィクスチャーである `tmp_path_factory` を使いましょう。テストが終わったら、一時ディレクトリ毎削除するティアダウンも書きましょう。このフィクスチャは conftest.py に記述してください。
-1. 以下は、Python で SQLite データベースをクエリする簡単な例です。(ChatGPT に書いてもらいました。)
-    ```python
-    import sqlite3
+ 
 
-    conn = sqlite3.connect("example.db")
-    cursor = conn.cursor()
-
-    # SELECT statement
-    cursor.execute("SELECT * FROM users")
-    rows = cursor.fetchall()
-    for row in rows:
-        print(row)
-
-    conn.close()
-
+1. 任意の `event_id` でリクエストして、常に同じレスポンスが返ってくること
+    ```{note}
+    以下は任意のパラメータをフィクスチャに渡す関数例です
     ```
-    このコード例を参考にして作成したDBを使ったテストを書いてみましょう。
+    ```python
+    @pytest.fixture
+    def custom_event_data():
+        def _custom_event_data(**params):
+            cli = ConnpassClient()
+            return cli.get(**params)
+        return _custom_event_dat
 
-
-## 第05章 パラメータ化
-
-
-
+    def test_something(custom_event_data):
+        data = custom_event_data(event_id = "266898")
+        assert data["results_returned"] == 1
+    ```
