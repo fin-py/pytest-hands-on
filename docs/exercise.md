@@ -29,13 +29,12 @@ connpass の規約を守るために、 `connpass_client` を使う時は、リ�
 
 ### 一つのイベントリクエストに対するテスト
 
-an_event_data フィクスチャを使って以下のテストを書いてみましょう
+`an_event_data` フィクスチャを使って以下のテストを書いてみましょう
 
-1. an_event_data のレスポンスフィールドは、`['results_start', 'results_returned', 'results_available', 'events']` である
-1. `events` の配列データは１つである
-1. `events` の配列データで返ってくる一つの辞書データのキーは `['event_id', 'title', 'catch', 'description', 'event_url', 'started_at', 'ended_at', 'limit', 'hash_tag', 'event_type', 'accepted', 'waiting', 'updated_at', 'owner_id', 'owner_nickname', 'owner_display_name', 'place', 'address', 'lat', 'lon', 'series']` と一致する
+1. `an_event_data` で得ることができる辞書のキーは、`['results_start', 'results_returned', 'results_available', 'events']` である
+1. `events` キーに紐づく配列データは１つである
+1. `events` キーに紐づく配列に格納された一つの辞書データのキーは `['event_id', 'title', 'catch', 'description', 'event_url', 'started_at', 'ended_at', 'limit', 'hash_tag', 'event_type', 'accepted', 'waiting', 'updated_at', 'owner_id', 'owner_nickname', 'owner_display_name', 'place', 'address', 'lat', 'lon', 'series']` と一致する
 1. `results_returned`と `events` の配列データ数は一致する
-1. `event_id="266898"` を３回リクエストし、常に同じレスポンスであること
 
 
 ### 複数のイベントリクエストに対するテスト
@@ -54,6 +53,7 @@ an_event_data フィクスチャを使って以下のテストを書いてみま
 
 以下のテストは、フィクスチャを新規に作る必要が有ります。テストにあわせてフィクスチャを作り、テストを作成してください
 
+1. `event_id="266898"` を３回リクエストし、常に同じレスポンスであることを確認する
 1. `event_id="266898"` のレスポンスをいったん CSV に書き出し、一行目が以下の一致すること。
     ```
     event_id,title,catch,description,event_url,started_at,ended_at,limit,hash_tag,event_type,accepted,waiting,updated_at,owner_id,owner_nickname,owner_display_name,place,address,lat,lon,series
