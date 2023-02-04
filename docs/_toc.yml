@@ -6,4 +6,5 @@ root: index
 chapters:
 - file: environment
 - file: hello-world
+- file: connpass_client
 - file: exercise
