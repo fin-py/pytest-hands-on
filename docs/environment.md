@@ -36,7 +36,7 @@ py -m venv .venv
 仮想環境を有効化します。
 
 ```bash
-python -m venv .venv
+source .venv/bin/activate
 ```
 
 ````{note}
