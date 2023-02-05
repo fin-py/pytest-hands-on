@@ -132,3 +132,5 @@ dmypy.json
 
 **connpass-client
 **_build/
+*.csv
+*.json
