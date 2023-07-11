@@ -170,7 +170,7 @@ def test_version_v2():
             obj = MyClass()
 
             # モック用の関数を定義
-            def mock_method(self, arg1, arg2):
+            def mock_method(arg1, arg2):
                 return arg1 * arg2
 
             # モック用の関数を設定

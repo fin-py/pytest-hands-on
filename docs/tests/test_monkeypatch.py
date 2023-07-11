@@ -41,7 +41,28 @@ def test_process_data(monkeypatch):
     result = foo.process_data()
     assert result == "MOCKED DATA"
 
+# テスト対象のクラス
+class MyClass:
+    def my_method(self, arg1, arg2):
+        return arg1 + arg2
 
+# テスト
+def test_my_method(monkeypatch):
+    # オブジェクトを作成
+    obj = MyClass()
+
+    # モック用の関数を定義
+    def mock_method(arg1, arg2):
+        return arg1 * arg2
+
+    # モック用の関数を設定
+    monkeypatch.setattr(obj, "my_method", mock_method)
+
+    # モックが呼び出される
+    result = obj.my_method(3, 4)
+
+    # モックの結果を検証
+    assert result == 12
 
 def test_client_data(monkeypatch):
     mock_response = {
