@@ -34,12 +34,11 @@ def test_tmp_directory2(tmp_path):
 1. `data = ConnpassClient().get(event_id="266898")` を実行し、`data["events"][0]["title"]` で返る結果が `'テスト駆動Python 第2版 読書会#1'` であるテストを書いて下さい
 1. tmp_path フィクスチャを使って、一時ファイルに `data["events"][0]["title"]` の結果を書き込み、その内容を `read_text` して得られる文字列が、`'テスト駆動Python 第2版 読書会#1'` であるテストを書いて下さい
 1. tmp_path フィクスチャを使って、一時ファイルに、`python -m connpass_client --event-id 266898 --csv <temp_file_path>` の結果を書き込んで下さい。その `<temp_file_path>` を `read_text` して得られる文字列の中に`'テスト駆動Python 第2版 読書会#1'`があることを確認するテストを書いて下さい。
-    - [ヒント1] Pythonファイル内で、コマンドライン引数を渡す時は、`-` は `_` にして下さい。（余談ですが、jupyter notebook のセルでは `-` です）
     - [ヒント2] `python -m connpass_client` を実行するには、外部プロセスを実行するための機能を提供する `subprocess.run` を使います。例：
         ```python 
         import subprocess
         subprocess.run(
-            ["python", "-m", "connpass_client", "--event_id", "266898"], # --event-id ではなくて --event_id
+            ["python", "-m", "connpass_client", "--event-id", "266898"], 
         )
         ```
     - [ヒント3] csv への書き込みは、[fin-py/connpass-client つかいかた](https://github.com/fin-py/connpass-client/tree/typer#%E3%81%A4%E3%81%8B%E3%81%84%E3%81%8B%E3%81%9F)を参照して下さい。
