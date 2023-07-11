@@ -34,14 +34,13 @@ def test_tmp_directory2(tmp_path):
 1. `data = ConnpassClient().get(event_id="266898")` を実行し、`data["events"][0]["title"]` で返る結果が `'テスト駆動Python 第2版 読書会#1'` であるテストを書いて下さい
 1. tmp_path フィクスチャを使って、一時ファイルに `data["events"][0]["title"]` の結果を書き込み、その内容を `read_text` して得られる文字列が、`'テスト駆動Python 第2版 読書会#1'` であるテストを書いて下さい
 1. tmp_path フィクスチャを使って、一時ファイルに、`python -m connpass_client --event-id 266898 --csv <temp_file_path>` の結果を書き込んで下さい。その `<temp_file_path>` を `read_text` して得られる文字列の中に`'テスト駆動Python 第2版 読書会#1'`があることを確認するテストを書いて下さい。
-    - [ヒント2] `python -m connpass_client` を実行するには、外部プロセスを実行するための機能を提供する `subprocess.run` を使います。例：
+    - [ヒント]: `python -m connpass_client` を実行するには、外部プロセスを実行するための機能を提供する `subprocess.run` を使います。例：
         ```python 
         import subprocess
         subprocess.run(
-            ["python", "-m", "connpass_client", "--event-id", "266898"], 
+            ["python", "-m", "connpass_client", "--event-id", "266898", "--csv", <temp_file_path>], 
         )
         ```
-    - [ヒント3] csv への書き込みは、[fin-py/connpass-client つかいかた](https://github.com/fin-py/connpass-client/tree/typer#%E3%81%A4%E3%81%8B%E3%81%84%E3%81%8B%E3%81%9F)を参照して下さい。
 
 ## tmp_path_factory
 
@@ -52,6 +51,8 @@ def test_tmp_directory2(tmp_path):
 - 同じモジュール内のすべてのテスト関数で同じ tmp_path_factory インスタンスを共有できる
 
 ```python 
+import pytest
+
 def test_temp_directory(tmp_path_factory): # デフォルトは関数スコープ
     temp_dir = tmp_path_factory.mktemp("my_temp_dir")
     file_path = temp_dir / "test_file.txt"
@@ -116,9 +117,9 @@ def test_version_v2():
 ```
 
 ### 問題
-1. `event_id="266898"` で取得できる辞書の `results_returned` キーに入っているデータは`1`であることをprint関数で出力してテストして下さい
+1. `ConnpassClient().get(event_id="266898")` で取得できる辞書の `results_returned` キーに入っているデータは`"1"`であることをprint関数で出力してテストして下さい
 1. `connpass_client` には `post` メソッドが無いので、呼び出そうとすると `AttributeError` が発生します。教科書の `2.6 想定される例外をテストする` を参考に期待するエラーが発生するテストを書いて下さい。
-1. `connpass_client` に存在しない `event-id` (例 8888888888) を渡すと、以下の辞書が返ることをテストして下さい。
+1. `connpass_client` に存在しない `event-id` (例 8888888888) を渡すと、以下の辞書が返ることをテストして下さい。コマンドの実行には `CliRunner()` を使って下さい。
     ```python 
     {'events': [],\n 'results_available': 0,\n 'results_returned': 0,\n 'results_start': 1}
     ```
@@ -130,7 +131,7 @@ def test_version_v2():
 
     Error: No such option: --taro Did you mean --start?
     ```
-    期待した通り Usage が返ることをテストしてください
+    期待した通り Usage が返ることをテストしてください。コマンドの実行には `subprocess.run()` を使って下さい。
     
 
 ## monkeypatch 
