@@ -135,3 +135,74 @@ def test_version_v2():
     
 
 ## monkeypatch 
+### 復習
+- アプリケーションコードや環境を変更
+- 外部の依存関係やグローバルな状態をモックしたり、テスト用のダミーデータを提供したりする
+
+### 練習
+1. 環境変数をモック
+    1. 環境変数を得る関数を書く
+        ```python 
+        def get_lang_value():
+            return os.environ.get("LANG")  # 'ja_JP.UTF-8'        
+        ```
+    1. 環境変数をモックしてテストを書く
+        ```python 
+        def test_get_lang_value(monkeypatch):
+            # 環境変数をモック
+            monkeypatch.setenv("LANG", "Mocked Lang Value")
+
+            result = get_lang_value()
+            assert result == "Mocked Lang Value"        
+        ```
+
+1. モジュール関数のモック
+    1. tests ディレクトリに `foo.py` を新規作成してコード記述
+        ```python 
+        # モジュールの関数
+        def get_data():
+            return "Real data"
+
+        # テスト対象の関数
+        def process_data():
+            data = get_data()
+            return data.upper()
+        ```
+    1. process_data関数をモックしてテストを書く
+        ```python 
+        import tests.foo as foo
+
+        def test_process_data(monkeypatch):
+            # モジュールの関数をモック
+            def mock_get_data():
+                return "Mocked data"
+
+            # モジュールの関数をモックに置き換え(TODO: foo.get_data ではできない。理由はどりらんせんせいに）
+            monkeypatch.setattr("tests.foo.get_data", mock_get_data) 
+
+            result = foo.process_data()
+            assert result == "MOCKED DATA"
+
+        ```
+### 問題
+
+1. 適当なJSONファイルを作成し、以下のデータを挿入してください
+    ```json
+    {
+        "results_start": 1,
+        "results_returned": 1,
+        "results_available": 1,
+        "events": [
+            {
+                "event_id": 266898
+            }
+        ]
+    }     
+    ```
+1. ConnpassClientの get メソッドが呼ばれたら先程のJsonファイルをREADするようにモックして、テストを書いてください。JSONファイルのReadは以下のように書くことができます。
+    ```python 
+    import json
+    with open("json file へのパス", "r") as f:
+        data = json.load(f)
+    return data    
+    ```
