@@ -143,6 +143,7 @@ def test_version_v2():
 1. 環境変数をモック
     1. 環境変数を得る関数を書く
         ```python 
+        import os
         def get_lang_value():
             return os.environ.get("LANG")  # 'ja_JP.UTF-8'        
         ```
@@ -156,33 +157,31 @@ def test_version_v2():
             assert result == "Mocked Lang Value"        
         ```
 
-1. モジュール関数のモック
-    1. tests ディレクトリに `foo.py` を新規作成してコード記述
+1. 引数があるメソッドをモック
+    1. テスト対象のクラス
         ```python 
-        # モジュールの関数
-        def get_data():
-            return "Real data"
-
-        # テスト対象の関数
-        def process_data():
-            data = get_data()
-            return data.upper()
+        class MyClass:
+            def my_method(self, arg1, arg2):
+                return arg1 + arg2
         ```
-    1. process_data関数をモックしてテストを書く
+    1. テスト
         ```python 
-        import tests.foo as foo
+        def test_my_method(monkeypatch):
+            # オブジェクトを作成
+            obj = MyClass()
 
-        def test_process_data(monkeypatch):
-            # モジュールの関数をモック
-            def mock_get_data():
-                return "Mocked data"
+            # モック用の関数を定義
+            def mock_method(self, arg1, arg2):
+                return arg1 * arg2
 
-            # モジュールの関数をモックに置き換え(TODO: foo.get_data ではできない。理由はどりらんせんせいに）
-            monkeypatch.setattr("tests.foo.get_data", mock_get_data) 
+            # モック用の関数を設定
+            monkeypatch.setattr(obj, "my_method", mock_method)
 
-            result = foo.process_data()
-            assert result == "MOCKED DATA"
+            # モックが呼び出される
+            result = obj.my_method(3, 4)
 
+            # モックの結果を検証
+            assert result == 12
         ```
 ### 問題
 
