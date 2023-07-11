@@ -14,7 +14,7 @@ def test_tmp_directory1(tmp_path):
     file_path = tmp_path / "test_file.txt"
     file_path.write_text("Hello, World!")
 
-    print(file_path.exists) # 出力するには -s オプション
+    print(file_path.resolve())  # 出力するには -s オプション
 
     assert file_path.exists()
     assert file_path.read_text() == "Hello, World!"
@@ -24,24 +24,33 @@ def test_tmp_directory2(tmp_path):
     file_path = tmp_path / "test_file.txt"
     file_path.write_text("Hello, World!")
 
-    print(file_path.exists) # 出力するには -s オプション
+    print(file_path.resolve()) # 出力するには -s オプション
 
     assert file_path.exists()
     assert file_path.read_text() == "Hello, World!"
 ```
 
 ### 問題
-1. `data = ConnpassClient().get(event_id="266898")` を実行し、`data["events"][0]["title"]` で得られる結果が `'テスト駆動Python 第2版 読書会#1'` であるテストを書いて下さい
+1. `data = ConnpassClient().get(event_id="266898")` を実行し、`data["events"][0]["title"]` で返る結果が `'テスト駆動Python 第2版 読書会#1'` であるテストを書いて下さい
 1. tmp_path フィクスチャを使って、一時ファイルに `data["events"][0]["title"]` の結果を書き込み、その内容を `read_text` して得られる文字列が、`'テスト駆動Python 第2版 読書会#1'` であるテストを書いて下さい
-1. tmp_path フィクスチャを使って、一時ファイルに、`python -m connpass_client --event-id 266898 --csv temp_file_path` の結果を書き込んで下さい。その `temp_file_path` を読み込んだ文字列の中に`'テスト駆動Python 第2版 読書会#1'`が存在することを確認するテストを書いて下さい。
+1. tmp_path フィクスチャを使って、一時ファイルに、`python -m connpass_client --event-id 266898 --csv <temp_file_path>` の結果を書き込んで下さい。その `<temp_file_path>` を `read_text` して得られる文字列の中に`'テスト駆動Python 第2版 読書会#1'`があることを確認するテストを書いて下さい。
+    - [ヒント1] Pythonファイル内で、コマンドライン引数を渡す時は、`-` は `_` にして下さい。（余談ですが、jupyter notebook のセルでは `-` です）
+    - [ヒント2] `python -m connpass_client` を実行するには、外部プロセスを実行するための機能を提供する `subprocess.run` を使います。例：
+        ```python 
+        import subprocess
+        subprocess.run(
+            ["python", "-m", "connpass_client", "--event_id", "266898"], # --event-id ではなくて --event_id
+        )
+        ```
+    - [ヒント3] csv への書き込みは、[fin-py/connpass-client つかいかた](https://github.com/fin-py/connpass-client/tree/typer#%E3%81%A4%E3%81%8B%E3%81%84%E3%81%8B%E3%81%9F)を参照して下さい。
 
 ## tmp_path_factory
 
 ### 復習
 - テスト中に一時ディレクトリを利用するためのフィクスチャ
 - TempPathFactoryオブジェクト
-- tmp_path_factory のスコープはセッションにできる
-- 同じモジュール内のすべてのテスト関数で同じ tmp_path_factory インスタンスが共有される
+- tmp_path_factory のスコープはセッションに設定できる
+- 同じモジュール内のすべてのテスト関数で同じ tmp_path_factory インスタンスを共有できる
 
 ```python 
 def test_temp_directory(tmp_path_factory): # デフォルトは関数スコープ
@@ -49,7 +58,7 @@ def test_temp_directory(tmp_path_factory): # デフォルトは関数スコー�
     file_path = temp_dir / "test_file.txt"
     file_path.write_text("Hello, World!")
     
-    print(file_path.exists)
+    print(file_path.resolve()) 
 
     assert file_path.exists()
     assert file_path.read_text() == "Hello, World!"
@@ -63,7 +72,7 @@ def temp_filepath(tmp_path_factory):
 
 
 def test_hello(temp_filepath):
-    print(temp_filepath)
+    print(temp_filepath.resolve())
     assert temp_filepath.read_text() == "Hello, World!"
 ```
 ### 問題
@@ -71,6 +80,7 @@ def test_hello(temp_filepath):
 1. 1で作ったフィクスチャを使って 文字列 `'テスト駆動Python 第2版 読書会#1'` が含まれているか確認するテストを書いて下さい。
 
 ## capsys
+- Pythonの標準出力と標準エラー出力をキャプチャし、テスト中にアクセスしてテスト結果を検証することができる
 
 ### 復習
 ```python 
@@ -80,6 +90,8 @@ def test_1(capsys):
 ```
 ### subprocess.run の使い方
 ```python 
+import subprocess
+
 def test_version_v1():
     output = subprocess.run(
         ["python", "-m", "connpass_client", "--version"],
@@ -90,7 +102,13 @@ def test_version_v1():
     assert output == connpass_client.__version__
 ```
 ### CliRunnerの使い方
+- Typerは、Pythonのコマンドラインアプリケーションの構築を支援するフレームワーク
+- CliRunnerはそのテストサポートを提供
+- `invoke()` メソッドを使用して、テスト対象のコマンドを呼び出すことができる。引数やオプションを指定し、コマンドの実行結果を取得。
+
 ```python 
+from typer.testing import CliRunner
+
 def test_version_v2():
     runner = CliRunner()
     result = runner.invoke(connpass_client.app, ["--version"])
@@ -105,7 +123,7 @@ def test_version_v2():
     ```python 
     {'events': [],\n 'results_available': 0,\n 'results_returned': 0,\n 'results_start': 1}
     ```
-1. コマンドラインで、connpass_clientを存在しないオプションを渡すと Usageが返ります。例:
+1. connpass_clientに存在しないオプションを渡すと Usageが返ります。例:
     ```bash
     > python -m connpass_client --taro
     Usage: python -m connpass_client [OPTIONS]
