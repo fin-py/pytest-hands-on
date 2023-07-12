@@ -217,3 +217,7 @@ def test_version_v2():
         data = json.load(f)
     return data    
     ```
+
+## サンプル解答
+
+[pytest-hands-on/docs/tests at main · fin-py/pytest-hands-on · GitHub](https://github.com/fin-py/pytest-hands-on/tree/main/docs/tests)
