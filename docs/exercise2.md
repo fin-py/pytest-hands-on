@@ -89,14 +89,17 @@ def test_1(capsys):
     assert capsys.readouterr().out.strip() == "Hello World!"
 ```
 ### subprocess.run の使い方
+- 外部プロセスを実行するための機能を提供
+- 返り値は、標準出力の場合 `stdout` に、標準エラー出力の場合  `stderr` にキャプチャされる
+
 ```python 
 import subprocess
 
 def test_version_v1():
     output = subprocess.run(
         ["python", "-m", "connpass_client", "--version"],
-        capture_output=True, 
-        text=True
+        capture_output=True, # 標準出力と標準エラー出力 をキャプチャ
+        text=True # 標準出力と標準エラー出力をデコードされた文字列として返す
     )
     output = output.stdout.rstrip()
     assert output == connpass_client.__version__
@@ -119,20 +122,21 @@ def test_version_v2():
 ### 問題
 1. `ConnpassClient().get(event_id="266898")` で取得できる辞書の `results_returned` キーに入っているデータは`"1"`であることをprint関数で出力してテストして下さい
 1. `connpass_client` には `post` メソッドが無いので、呼び出そうとすると `AttributeError` が発生します。教科書の `2.6 想定される例外をテストする` を参考に期待するエラーが発生するテストを書いて下さい。
-1. `connpass_client` に存在しない `event-id` (例 8888888888) を渡すと、以下の辞書が返ることをテストして下さい。コマンドの実行には `CliRunner()` を使って下さい。
+1. `connpass_client` に存在しない `--event-id` (例 8888888888) を渡すと、以下の辞書が返ることをテストして下さい。コマンドの実行には `CliRunner()` を使って下さい。
     ```python 
     {'events': [],\n 'results_available': 0,\n 'results_returned': 0,\n 'results_start': 1}
     ```
-1. connpass_clientに存在しないオプションを渡すと Usageが返ります。例:
+1. connpass_clientに存在しないオプションを渡すとUsageが返ります。例のコマンドを使って期待した通り Usage が返ることをテストしてください。コマンドの実行には `subprocess.run()` を使って下さい。また、今回は標準エラー出力になるので、`stderr` にキャプチャされることに注意してください。
+    例:
     ```bash
-    > python -m connpass_client --taro
+    $ python -m connpass_client --taro
+    ```
+    ```bash
     Usage: python -m connpass_client [OPTIONS]
     Try 'python -m connpass_client --help' for help.
 
     Error: No such option: --taro Did you mean --start?
     ```
-    期待した通り Usage が返ることをテストしてください。コマンドの実行には `subprocess.run()` を使って下さい。
-    
 
 ## monkeypatch 
 ### 復習
