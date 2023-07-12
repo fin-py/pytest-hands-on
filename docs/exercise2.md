@@ -94,6 +94,7 @@ def test_1(capsys):
 
 ```python 
 import subprocess
+import connpass_client
 
 def test_version_v1():
     output = subprocess.run(
@@ -105,8 +106,8 @@ def test_version_v1():
     assert output == connpass_client.__version__
 ```
 ### CliRunnerの使い方
-- Typerは、Pythonのコマンドラインアプリケーションの構築を支援するフレームワーク
-- CliRunnerはそのテストサポートを提供
+- [Typer](https://typer.tiangolo.com/) は、Pythonのコマンドラインアプリケーションの構築を支援するフレームワーク
+- [CliRunner](https://typer.tiangolo.com/tutorial/testing/#test-the-app) はそのテストサポートを提供
 - `invoke()` メソッドを使用して、テスト対象のコマンドを呼び出すことができる。引数やオプションを指定し、コマンドの実行結果を取得。
 
 ```python 
@@ -122,12 +123,12 @@ def test_version_v2():
 ### 問題
 1. `ConnpassClient().get(event_id="266898")` で取得できる辞書の `results_returned` キーに入っているデータは`"1"`であることをprint関数で出力してテストして下さい
 1. `connpass_client` には `post` メソッドが無いので、呼び出そうとすると `AttributeError` が発生します。教科書の `2.6 想定される例外をテストする` を参考に期待するエラーが発生するテストを書いて下さい。
-1. `connpass_client` に存在しない `--event-id` (例 8888888888) を渡すと、以下の辞書が返ることをテストして下さい。コマンドの実行には `CliRunner()` を使って下さい。
+1. 存在しない `--event-id` (例 8888888888) を`connpass_client` に渡すと、以下の辞書が返ることをテストして下さい。コマンドの実行には `CliRunner()` を使って下さい。
     ```python 
-    {'events': [],\n 'results_available': 0,\n 'results_returned': 0,\n 'results_start': 1}
+    """{'events': [],\n 'results_available': 0,\n 'results_returned': 0,\n 'results_start': 1}"""
     ```
-1. connpass_clientに存在しないオプションを渡すとUsageが返ります。例のコマンドを使って期待した通り Usage が返ることをテストしてください。コマンドの実行には `subprocess.run()` を使って下さい。また、今回は標準エラー出力になるので、`stderr` にキャプチャされることに注意してください。
-    例:
+1. `connpass_client` に存在しないオプションを渡すとUsageが返ります。テストコマンドを使って期待した通り Usage が返ることをテストしてください。コマンドの実行には `subprocess.run()` を使って下さい。また、今回は標準エラー出力になるので、`stderr` にキャプチャされることに注意してください。
+    テストコマンド:
     ```bash
     $ python -m connpass_client --taro
     ```
@@ -202,7 +203,7 @@ def test_version_v2():
         ]
     }     
     ```
-1. ConnpassClientの get メソッドが呼ばれたら先程のJsonファイルをREADするようにモックして、テストを書いてください。JSONファイルのReadは以下のように書くことができます。
+1. ConnpassClientの get メソッドが呼ばれたら先程のJsonファイルをREADするようにモックして、上記の辞書データと一致するか確認するテストを書いてください。JSONファイルのReadは以下のように書くことができます。
     ```python 
     import json
     with open("json file へのパス", "r") as f:
