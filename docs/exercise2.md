@@ -203,7 +203,7 @@ def test_version_v2():
         ]
     }     
     ```
-1. ConnpassClientの get メソッドが呼ばれたら先程のJsonファイルをREADするようにモックして、上記の辞書データと一致するか確認するテストを書いてください。JSONファイルのReadは以下のように書くことができます。
+1. `ConnpassClient` の `get` が呼ばれたら先程のJsonファイルをloadするようにモックしてください。次に、`ConnpassClient().get(event_id="266898")` が実行されたらサーバに問い合わせに行かずに、モック関数が実行され、返り値が上記の辞書データと一致するか確認するテストを書いてください。JSONファイルのloadは以下のように書くことができます。
     ```python 
     import json
     with open("json file へのパス", "r") as f:
