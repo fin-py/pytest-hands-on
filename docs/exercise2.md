@@ -41,6 +41,13 @@ def test_tmp_directory2(tmp_path):
             ["python", "-m", "connpass_client", "--event-id", "266898", "--csv", <temp_file_path>], 
         )
         ```
+    - [ヒント]: Windows の方は、python へのフルパスを渡す必要が有るようです。パスはこの様に取得出来ます。
+        ```python 
+        import sys
+
+        python_path = sys.executable
+        print(python_path)
+        ```
 
 ## tmp_path_factory
 
